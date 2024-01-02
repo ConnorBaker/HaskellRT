@@ -1,0 +1,37 @@
+packages: HaskellRT.cabal
+verbose: 1
+jobs: $ncpus
+-- Semaphore is coming in Cabal 3.12
+-- semaphore: true
+index-state:
+  , hackage.haskell.org 2024-01-01T23:50:33Z
+
+package *
+  optimization: 2
+  split-sections: true
+  executable-stripping: true
+  library-stripping: true
+  library-for-ghci: false
+  ghc-options:
+    -- https://downloads.haskell.org/ghc/latest/docs/users_guide/using-optimisation.html#ghc-flag--feager-blackholing
+    -feager-blackholing
+    -- https://downloads.haskell.org/ghc/latest/docs/users_guide/using-optimisation.html#ghc-flag--fspecialise-aggressively
+    -fspecialise-aggressively
+    -- https://downloads.haskell.org/ghc/latest/docs/users_guide/using-optimisation.html#ghc-flag--fexpose-all-unfoldings
+    -fexpose-all-unfoldings
+    -- https://downloads.haskell.org/ghc/latest/docs/users_guide/using-optimisation.html#ghc-flag--flate-dmd-anal
+    -flate-dmd-anal
+    -- https://downloads.haskell.org/ghc/latest/docs/users_guide/using-optimisation.html#ghc-flag--fmax-simplifier-iterations=⟨n⟩
+    -fmax-simplifier-iterations=4
+    -- https://downloads.haskell.org/ghc/latest/docs/users_guide/using-optimisation.html#ghc-flag--fsimplifier-phases=⟨n⟩
+    -fsimplifier-phases=2
+    -- https://downloads.haskell.org/ghc/latest/docs/users_guide/using-optimisation.html#ghc-flag--fsimpl-tick-factor=⟨n⟩
+    -fsimpl-tick-factor=100
+    -- https://downloads.haskell.org/ghc/latest/docs/users_guide/using-optimisation.html#ghc-flag--flate-specialise
+    -flate-specialise
+    -- https://downloads.haskell.org/ghc/latest/docs/users_guide/using-optimisation.html#ghc-flag--fstatic-argument-transformation
+    -fstatic-argument-transformation
+    -- https://downloads.haskell.org/ghc/latest/docs/users_guide/exts/applicative_do.html#ghc-flag--foptimal-applicative-do
+    -foptimal-applicative-do
+    -- https://downloads.haskell.org/ghc/latest/docs/users_guide/using.html#ghc-flag--mfma
+    -mfma

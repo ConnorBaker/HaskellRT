@@ -1,0 +1,40 @@
+cabal-version:   3.0
+name:            HaskellRT
+version:         0.1.0.0
+build-type:      Simple
+extra-doc-files: CHANGELOG.md
+
+executable HaskellRT
+    main-is:            Main.hs
+    hs-source-dirs:     app
+    other-modules:
+        HitRecord
+        Interval2D
+        Point
+        Ray
+        Sphere
+        Triplet
+        UnitVector
+        Vector
+        Viewport
+        World
+
+    default-language:   GHC2021
+    default-extensions:
+        AllowAmbiguousTypes
+        ApplicativeDo
+        DerivingStrategies
+        LambdaCase
+        MonoLocalBinds
+        NamedFieldPuns
+        OverloadedRecordDot
+        OverloadedRecordUpdate
+        OverloadedStrings
+        QuantifiedConstraints
+        RebindableSyntax
+        RecordWildCards
+
+    ghc-options:        -Wall -haddock
+    build-depends:
+        base ^>=4.19.0.0,
+        random-fu ^>=0.3.0.1
