@@ -1,8 +1,25 @@
 cabal-version:   3.0
 name:            HaskellRT
 version:         0.1.0.0
+license:         BSD-3-Clause
+copyright:       Connor Baker 2024
+maintainer:      Connor Baker <connorbaker01@gmail.com>
+author:          Connor Baker <connorbaker01@gmail.com>
+tested-with:     ghc ==9.8
+homepage:        https://github.com/ConnorBaker/HaskellRT
+bug-reports:     https://github.com/ConnorBaker/HaskellRT
+synopsis:        A ray tracer written in Haskell
+description:
+    A ray tracer written in Haskell meant to study the differences in image quality between different
+    floating-point representations.
+
+category:        Graphics
 build-type:      Simple
 extra-doc-files: CHANGELOG.md
+
+source-repository head
+    type:     git
+    location: https://github.com/ConnorBaker/HaskellRT.git
 
 executable HaskellRT
     main-is:            Main.hs
@@ -21,18 +38,10 @@ executable HaskellRT
 
     default-language:   GHC2021
     default-extensions:
-        AllowAmbiguousTypes
-        ApplicativeDo
-        DerivingStrategies
-        LambdaCase
-        MonoLocalBinds
-        NamedFieldPuns
-        OverloadedRecordDot
-        OverloadedRecordUpdate
-        OverloadedStrings
-        QuantifiedConstraints
-        RebindableSyntax
-        RecordWildCards
+        AllowAmbiguousTypes ApplicativeDo DerivingStrategies LambdaCase
+        MonoLocalBinds NamedFieldPuns OverloadedRecordDot
+        OverloadedRecordUpdate OverloadedStrings QuantifiedConstraints
+        RebindableSyntax RecordWildCards
 
     ghc-options:        -Wall -haddock
     build-depends:
