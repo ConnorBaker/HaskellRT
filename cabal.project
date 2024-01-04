@@ -22,11 +22,11 @@ package *
     -- https://downloads.haskell.org/ghc/latest/docs/users_guide/using-optimisation.html#ghc-flag--flate-dmd-anal
     -flate-dmd-anal
     -- https://downloads.haskell.org/ghc/latest/docs/users_guide/using-optimisation.html#ghc-flag--fmax-simplifier-iterations=⟨n⟩
-    -fmax-simplifier-iterations=4
+    -fmax-simplifier-iterations=50000
     -- https://downloads.haskell.org/ghc/latest/docs/users_guide/using-optimisation.html#ghc-flag--fsimplifier-phases=⟨n⟩
-    -fsimplifier-phases=2
+    -fsimplifier-phases=10000
     -- https://downloads.haskell.org/ghc/latest/docs/users_guide/using-optimisation.html#ghc-flag--fsimpl-tick-factor=⟨n⟩
-    -fsimpl-tick-factor=100
+    -fsimpl-tick-factor=100000
     -- https://downloads.haskell.org/ghc/latest/docs/users_guide/using-optimisation.html#ghc-flag--flate-specialise
     -flate-specialise
     -- https://downloads.haskell.org/ghc/latest/docs/users_guide/using-optimisation.html#ghc-flag--fstatic-argument-transformation

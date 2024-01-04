@@ -25,10 +25,14 @@ executable HaskellRT
     main-is:            Main.hs
     hs-source-dirs:     app
     other-modules:
+        Camera
+        Color
+        Hittable
         HitRecord
         Interval2D
         Point
         Ray
+        Renderer
         Sphere
         Triplet
         UnitVector
@@ -38,12 +42,16 @@ executable HaskellRT
 
     default-language:   GHC2021
     default-extensions:
-        AllowAmbiguousTypes ApplicativeDo DerivingStrategies LambdaCase
-        MonoLocalBinds NamedFieldPuns OverloadedRecordDot
+        AllowAmbiguousTypes ApplicativeDo DerivingStrategies InstanceSigs
+        LambdaCase MonoLocalBinds NamedFieldPuns OverloadedRecordDot
         OverloadedRecordUpdate OverloadedStrings QuantifiedConstraints
-        RebindableSyntax RecordWildCards
+        RebindableSyntax RecordWildCards ScopedTypeVariables
 
     ghc-options:        -Wall -haddock
     build-depends:
         base ^>=4.19.0.0,
-        random-fu ^>=0.3.0.1
+        random-fu ^>=0.3.0.1,
+        mtl,
+        mwc-random,
+        vector,
+        random

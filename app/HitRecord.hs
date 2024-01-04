@@ -20,11 +20,13 @@ data HitRecord (a :: Type) where
       frontFace :: Bool
     } ->
     HitRecord a
+  deriving (Eq, Show)
 
 -- | Sets the normal of the hit record to the outward normal of the
 -- surface hit by the ray. The outward normal is the normal that
 -- points in the same direction as the ray.
 mkHitRecord ::
+  forall a.
   (Num a, Ord a) =>
   -- | The point of intersection.
   Point a ->
@@ -37,6 +39,8 @@ mkHitRecord ::
   -- | The 'HitRecord'.
   HitRecord a
 mkHitRecord point outwardNormal t ray =
-  let frontFace = (ray.direction `dot` outwardNormal) < 0
+  let frontFace :: Bool
+      frontFace = (ray.direction `dot` outwardNormal) < 0
+      normal :: UnitVector a
       normal = applyWhen frontFace UnitVector.negate outwardNormal
    in HitRecord {..}

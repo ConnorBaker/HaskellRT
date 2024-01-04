@@ -29,4 +29,4 @@ rayAt ::
   a ->
   -- | The point on the ray at time t.
   Point a
-rayAt ray t = ray.origin + (pure t) * coerce ray.direction
+rayAt ray t = ray.origin + pure t * coerce ray.direction

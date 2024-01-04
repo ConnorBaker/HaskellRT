@@ -1,7 +1,9 @@
 module Vector where
 
+import Control.Monad (join)
 import Data.Coerce (coerce)
 import Data.Kind (Type)
+import Data.Random (Distribution, RVar, StdUniform, stdUniform)
 import Triplet (Triplet (..))
 import Prelude
 
@@ -29,3 +31,17 @@ magnitudeSquared = sum . fmap (^ (2 :: Int))
 
 magnitude :: (Floating a) => Vector a -> a
 magnitude = sqrt . magnitudeSquared
+
+sampleVectorStdUniform :: (Ord a, Floating a, Distribution StdUniform a) => RVar (Vector a)
+sampleVectorStdUniform = do
+  x <- stdUniform
+  y <- stdUniform
+  z <- stdUniform
+  pure . Vector $ Triplet (x, y, z)
+
+sampleVectorStdUniformWhile :: (Ord a, Floating a, Distribution StdUniform a) => (Vector a -> Bool) -> RVar (Vector a)
+sampleVectorStdUniformWhile p = do
+  v <- sampleVectorStdUniform
+  case p v of
+    True -> pure v
+    False -> sampleVectorStdUniformWhile p

@@ -2,20 +2,17 @@ module Viewport where
 
 import Data.Coerce (coerce)
 import Data.Kind (Type)
+import Data.Random (Distribution, RVar, StdUniform, stdUniform)
 import Data.Ratio ((%))
-import GHC.Records
-import Point
-import Triplet
-import Vector
+import GHC.Records (HasField (getField))
+import Point (Point (..), scale)
+import Triplet (Triplet (Triplet))
+import Vector (Vector (..), scale)
 import Prelude
 
 data ViewportConfig (a :: Type) where
   ViewportConfig ::
-    { -- | The width of the viewport in pixels.
-      aspectWidth :: Integer,
-      -- | The height of the viewport in pixels.
-      aspectHeight :: Integer,
-      -- | The ratio of width to height.
+    { -- | The aspect ratio of the viewport.
       aspectRatio :: Rational,
       -- | The width of the image in pixels.
       imageWidth :: Integer,
@@ -33,41 +30,78 @@ data ViewportConfig (a :: Type) where
     ViewportConfig a
   deriving (Eq, Show)
 
-mkViewportConfig :: (Num a, Floating a) => Integer -> Integer -> Integer -> ViewportConfig a
-mkViewportConfig aspectWidth aspectHeight imageWidth =
+defaultViewportConfig :: (Floating a) => ViewportConfig a
+defaultViewportConfig = mkViewportConfig (16 % 9) 400
+
+mkViewportConfig ::
+  forall a.
+  (Floating a) =>
+  -- | The aspect ratio of the viewport.
+  Rational ->
+  -- | The width of the image in pixels.
+  Integer ->
+  -- | The viewport configuration.
+  ViewportConfig a
+mkViewportConfig aspectRatio imageWidth =
   let -- Core values
-      aspectRatio = aspectWidth % aspectHeight
-      imageHeight = floor $ (imageWidth % 1) * aspectRatio
+      imageHeight :: Integer
+      imageHeight = floor $ fromInteger imageWidth / aspectRatio
+      cameraCenter :: Point a
       cameraCenter = pure 0
 
       -- Determine viewport dimensions
+      focalLength :: a
       focalLength = 1.0
+      viewportHeight :: a
       viewportHeight = 2.0 * focalLength
-      viewportWidth = (fromRational aspectRatio) * viewportHeight
+      viewportWidth :: a
+      viewportWidth = fromRational aspectRatio * viewportHeight
 
       -- Calculate viewport location
+      viewportU :: Vector a
       viewportU = Vector $ Triplet (viewportWidth, 0.0, 0.0)
+      viewportV :: Vector a
       viewportV = Vector $ Triplet (0.0, -viewportHeight, 0.0)
-      viewportAvg = (recip 2.0) `Vector.scale` (viewportU + viewportV)
+      viewportAvg :: Vector a
+      viewportAvg = recip 2.0 `Vector.scale` (viewportU + viewportV)
 
       -- Calculate the delta values from pixel to pixel
-      deltaU = (recip $ fromIntegral imageWidth) `Vector.scale` viewportU
-      deltaV = (recip $ fromIntegral imageHeight) `Vector.scale` viewportV
-      deltaAvg = (recip 2.0) `Vector.scale` (deltaU + deltaV)
+      deltaU :: Vector a
+      deltaU = recip (fromIntegral imageWidth) `Vector.scale` viewportU
+      deltaV :: Vector a
+      deltaV = recip (fromIntegral imageHeight) `Vector.scale` viewportV
+      deltaAvg :: Vector a
+      deltaAvg = recip 2.0 `Vector.scale` (deltaU + deltaV)
 
       -- Calculate the location of the upper-left pixel
-      viewportUpperLeft = cameraCenter - (coerce viewportAvg) - (Point $ Triplet (0.0, 0.0, focalLength))
-      loc00 = viewportUpperLeft + (coerce deltaAvg)
+      viewportUpperLeft :: Point a
+      viewportUpperLeft = cameraCenter - coerce viewportAvg - coerce (Triplet (0.0, 0.0, focalLength))
+      loc00 :: Point a
+      loc00 = viewportUpperLeft + coerce deltaAvg
    in ViewportConfig {..}
 
 -- | Get the center of the pixel at x, y.
-getPixelCenter :: (Num a, Floating a) => ViewportConfig a -> Integer -> Integer -> Point a
+getPixelCenter ::
+  (Num a, Floating a) =>
+  -- | The viewport configuration.
+  ViewportConfig a ->
+  -- | The x coordinate of the pixel.
+  Integer ->
+  -- | The y coordinate of the pixel.
+  Integer ->
+  -- | The center of the pixel.
+  Point a
 getPixelCenter cfg x y =
-  (fromIntegral y) `Point.scale` (coerce cfg.deltaV) + (fromIntegral x) `Point.scale` (coerce cfg.deltaU) + cfg.loc00
+  fromIntegral y `Point.scale` coerce cfg.deltaV + fromIntegral x `Point.scale` coerce cfg.deltaU + cfg.loc00
 
 -- | Get the random point in the square surrounding a pixel at the origin.
-samplePixelSquare :: (Num a, Floating a) => ViewportConfig a -> Point a
-samplePixelSquare cfg =
-  let px = -0.5 * undefined
-      py = -0.5 * undefined
-   in py `Point.scale` (coerce cfg.deltaV) + px `Point.scale` (coerce cfg.deltaU)
+samplePixelSquare ::
+  (Floating a, Distribution StdUniform a) =>
+  -- | The viewport configuration.
+  ViewportConfig a ->
+  -- | The random point in the square.
+  RVar (Point a)
+samplePixelSquare cfg = do
+  px <- fmap (\p -> (-0.5) * p `Point.scale` coerce cfg.deltaV) stdUniform
+  py <- fmap (\p -> (-0.5) * p `Point.scale` coerce cfg.deltaU) stdUniform
+  pure $ px + py
